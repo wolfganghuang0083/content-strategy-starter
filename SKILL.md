@@ -67,7 +67,22 @@ Workflow({ scriptPath: '~/.claude/skills/content-strategy-starter/scripts/genera
 ```
 跑完 Read `outPath`：拿到策略文件＋25 篇題庫＋種子地圖。把種子地圖貼進 content-map-builder 的表，接著走 map → pipeline → schedule → interlink。
 
+## 覆蓋率與規模：25 是「種子」不是天花板
+- **25 篇（5×5）涵蓋什麼**：橫向＝5 種買家全顧到；縱向＝每種人全漏斗(TOFU/MOFU/BOFU)。＝「頭部＋高意願腰部」、驅動早期 80% 轉換的那 20% 主題（各叢集 hub＋關鍵 spoke）。約佔成熟主題網的 15–30%。
+- **25 沒涵蓋什麼**：長尾變體、子分眾、比較/功能/地區/季節/競品長尾，以及只有上線後從真實 SERP/GSC 數據才浮現的需求。
+- **為什麼預設 25**：夠廣(防單一受眾盲點)×夠深(每人全漏斗)，量約一季週更、能寫完不淹死，又大到讓每個叢集都起跑、開始排名與產數據。
+- **規模可調**：`personas` 與 `scenariosEach` 直接放大第一波——試水 5×5=25；認真打 8×8≈64；全面 10×10=100。依目標與產能選。
+- **真正的覆蓋是「長」出來的（數據飛輪）**：
+  `25 種子 → 上線數週 → GSC 數據 → content-map-builder 收割+擴張 → 把有曝光的 hub 用 serp 炸成長尾 → content-ops 每週 routine 持續補 → 覆蓋率向 80%+ 爬`。
+- **長尾擴張模式**（種子之後把某 hub 炸成 N 篇）：
+  ```
+  Workflow({ scriptPath: '~/.claude/skills/content-strategy-starter/scripts/generate_strategy.js',
+             args: { expandHub: '<某個 hub 主題>', count: 15, market: '台灣繁體中文', outPath: '/tmp/expand_<slug>.md' } })
+  ```
+  產出該 hub 的 15 個長尾 spoke（問句/比較/修飾詞/子分眾），貼進 content-map-builder 當 spoke、高潛力者先用 serp_analysis 驗證再寫。
+
 ## 鐵則
+- **25 是種子不是全部**：別把 25 當「寫完就結束」；它是點燃數據飛輪的第一波，靠 GSC 數據＋長尾擴張持續長大。
 - **先有人，再有字**：所有關鍵字/標題都從 persona × 場景長出來，不憑空想關鍵字。
 - **標題用他打的字**：接搜尋意圖，不耍聰明。
 - **特色要對得上問題**：對不上需求的特色不主打。

@@ -15,9 +15,32 @@ if (typeof A === 'string') { try { A = JSON.parse(A) } catch (e) { A = {} } }
 A = A || {}
 const BUSINESS = A.business || ''
 const MARKET = A.market || '台灣繁體中文'
-const N_PERSONA = A.personas || 5
-const N_SCEN = A.scenariosEach || 5
+const N_PERSONA = A.personas || 5     // 想擴大第一波就調高(例 8)
+const N_SCEN = A.scenariosEach || 5   // 每個 persona 幾個場景(例 8 → 8×8=64)
 const OUT = A.outPath || '/tmp/content_strategy.md'
+
+// ===== 長尾擴張模式：把一個既有 hub 主題炸成 N 篇長尾 spoke（25 種子之後的擴張工具）=====
+// 用法：args.expandHub='<hub主題>', count=15, outPath, (business 可省)
+const EXPAND_HUB = A.expandHub || ''
+if (EXPAND_HUB) {
+  const N = A.count || 15
+  phase('Expand')
+  log(`長尾擴張：把 hub「${EXPAND_HUB}」炸成 ${N} 篇 spoke…`)
+  const r = await agent(
+    `市場/語系：${MARKET}。生意背景：${BUSINESS || '(未提供，依 hub 推理)'}。\n` +
+    `針對 hub 主題「${EXPAND_HUB}」做「長尾擴張」：產 ${N} 個彼此不同、可各成一篇文章的長尾 spoke。\n` +
+    `要像真實搜尋的長尾：涵蓋 問句(怎麼/什麼/為什麼/可以嗎)、比較(X vs Y)、修飾詞(費用/推薦/挑選/避雷/2026/在地/品牌名/評價)、子分眾、情境變體。\n` +
+    `每個 spoke 給：子主題、他實際會打的查詢字、搜尋階段(TOFU/MOFU/BOFU)、接住意圖的標題、回連的 hub(="${EXPAND_HUB}")。\n` +
+    `彼此不可重複；優先高商業意願 + 長尾好排名者。然後用 Write 工具把結果寫成 Markdown 到：${OUT}\n` +
+    `Markdown 內容：# ${EXPAND_HUB} — 長尾擴張（${N} 篇）＋一個表(子主題|查詢字|階段|標題|回連hub)＋結尾提醒「貼進 content-map-builder 當此 hub 的 spoke；高潛力者先用 content-pipeline 的 serp_analysis 驗證再寫」。\n` +
+    `回傳 {ok, outPath, count}。`,
+    { label: `expand:${EXPAND_HUB}`.slice(0, 40), phase: 'Expand',
+      schema: { type: 'object', properties: { ok: { type: 'boolean' }, outPath: { type: 'string' }, count: { type: 'number' } }, required: ['ok', 'outPath'] } }
+  )
+  log(`長尾擴張完成 → ${r.outPath}`)
+  return r
+}
+
 if (!BUSINESS) { log('⚠️ 缺 args.business（基本公司/產品/服務資訊）'); return { error: 'no business input' } }
 
 const PROFILE_SCHEMA = {
